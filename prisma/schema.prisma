@@ -1,0 +1,136 @@
+// ParulSoftTechAI - Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_users")
+}
+
+model Project {
+  id           Int       @id @default(autoincrement())
+  title        String
+  slug         String    @unique
+  description  String    @db.Text
+  longDescription String? @db.Text @map("long_description")
+  category     String
+  techStack    String    @db.Text // JSON array
+  features     String    @db.Text // JSON array
+  metrics      String?   @db.Text // JSON object
+  testimonial  String?   @db.Text // JSON object
+  clientName   String?   @map("client_name")
+  clientIndustry String? @map("client_industry")
+  imageUrl     String?   @map("image_url")
+  liveUrl      String?   @map("live_url")
+  featured     Boolean   @default(false)
+  status       String    @default("published")
+  sortOrder    Int       @default(0) @map("sort_order")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@map("projects")
+}
+
+model Capability {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  icon        String
+  features    String   @db.Text // JSON array
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("capabilities")
+}
+
+model Lead {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String
+  phone        String?
+  company      String?
+  projectType  String?   @map("project_type")
+  budget       String?
+  timeline     String?
+  message      String    @db.Text
+  status       String    @default("new")
+  estimatedCost Int?     @map("estimated_cost")
+  source       String    @default("website")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@map("leads")
+}
+
+model ChatLog {
+  id         Int      @id @default(autoincrement())
+  sessionId  String   @map("session_id")
+  role       String
+  message    String   @db.Text
+  intent     String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([sessionId])
+  @@map("chat_logs")
+}
+
+model ProjectConcept {
+  id           Int      @id @default(autoincrement())
+  sessionId    String   @map("session_id")
+  projectType  String   @map("project_type")
+  concept      String   @db.Text // Full JSON concept
+  estimatedCost Int?    @map("estimated_cost")
+  estimatedTimeline String? @map("estimated_timeline")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("project_concepts")
+}
+
+model AnalyticsEvent {
+  id         BigInt   @id @default(autoincrement())
+  sessionId  String   @map("session_id")
+  eventType  String   @map("event_type")
+  pagePath   String?  @map("page_path")
+  metadata   String?  @db.Text // JSON
+  userAgent  String?  @map("user_agent")
+  referrer   String?
+  country    String?
+  device     String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([eventType])
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("analytics_events")
+}
+
+model Appointment {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  date      DateTime
+  timezone  String   @default("UTC")
+  topic     String?
+  notes     String?  @db.Text
+  status    String   @default("scheduled")
+  leadId    Int?     @map("lead_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("appointments")
+}
